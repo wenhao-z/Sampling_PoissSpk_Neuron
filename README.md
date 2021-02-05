@@ -37,8 +37,8 @@ The code was developed on MATLAB R2018b and can be ran on MATLAB with new versio
 The `simExpMdls.m` can be ran on a standand computer with enough RAM. The computer should have at least 8GB of RAM.
 
 The `Cluster_code\simNet_ScanPars.m` should be ran on a high performance cluster (HPC). 
-The user needs to revise `simNet_ScanPars.m` based on the job scheduler or mangement on the HPC.
-
+A single loop in `simNet_ScanPars.m` will take about 5 mins in a single node.
+The user may need to revise `simNet_ScanPars.m` based on the job scheduler or mangement on the HPC.
 
 
 # License
