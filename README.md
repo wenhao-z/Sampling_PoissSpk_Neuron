@@ -4,7 +4,6 @@
 
 
 - [Overview](#overview)
-- [Documentation](#documentation)
 - [License](#License)
 - [System Requirements](#system-requirements)
 - [Installation Guide](#installation-guide)
@@ -20,5 +19,4 @@ The user needs to revise `simNet_ScanPars.m` based on the job scheduler or mange
 
 
 # License
-
 This project is covered under the **Apache 2.0 License**.
