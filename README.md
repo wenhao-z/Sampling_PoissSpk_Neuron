@@ -4,10 +4,8 @@
 
 
 - [Overview](#overview)
+- [User guide and system Requirements](#User-guide)
 - [License](#License)
-- [System Requirements](#system-requirements)
-- [User Guide](#User-guide)
-- [Setting up the development environment](#setting-up-the-development-environment)
 
 # Overview
 This code simulates a recurrent neural network which uses the structured recurrent connections and internal Poisson spiking variability to implement
