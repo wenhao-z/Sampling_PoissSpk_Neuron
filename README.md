@@ -39,17 +39,19 @@ There are two main files the user can use to reproduce the results in this study
 
 - `simExpMdls.m`
 
-Directly run `simExpMdls.m` and you can get most of demo results in the presented study.
+ Directly run `simExpMdls.m` and you can get most of demo results in the presented study.
 
-You can change the variable `flagTask` in `simExpMdls.m` to get the results under different demo task.
+ You can change the variable `flagTask` in `simExpMdls.m` to get the results under different demo task.
 
-The `simExpMdls.m` can be ran on a standand computer with enough RAM. The computer should have at least 8GB of RAM.
+ The `simExpMdls.m` can be ran on a standand computer with enough RAM. The computer should have at least 8GB of RAM.
 
 - `Cluster_code\simNet_ScanPars.m`
-The `Cluster_code\simNet_ScanPars.m` should be ran on a high performance cluster (HPC). 
-A single loop in `simNet_ScanPars.m` will take about 5 mins in a single node.
-The user may need to revise `simNet_ScanPars.m` based on the job scheduler or mangement on the HPC.
 
+ The `Cluster_code\simNet_ScanPars.m` should be ran on a high performance cluster (HPC). 
+
+ A single loop in `simNet_ScanPars.m` will take about 40 mins in a single thread.
+ 
+ The user may need to revise `simNet_ScanPars.m` based on the job scheduler or mangement on the HPC.
 
 # License
 This project is covered under the **Apache 2.0 License**.
