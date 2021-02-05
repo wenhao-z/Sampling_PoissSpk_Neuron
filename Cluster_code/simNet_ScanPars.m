@@ -63,7 +63,6 @@ meanPosterior = cell(size(parGrid)); % [(s,z), dim of parGrid];
 tStart = clock;
 
 for IdxPar = 1: numel(parGrid)
-    tic
     % IdxPar = str2double(getenv('SLURM_ARRAY_TASK_ID'));
     fprintf('Progress: %d/%d\n', IdxPar, numel(parGrid));
     
@@ -92,7 +91,6 @@ for IdxPar = 1: numel(parGrid)
         [InfoAnsFwdRes, NetStatFwd] = InfoTheoAns_BatchFunc(nSpkfwd, popVec, netpars, 'minRateAns', ...
             minRateAns, 'bBootStrap', bBootStrap, 'nBootStrap', nBootStrap);
     end
-    toc
 end
 tEnd = clock;
 clear outSet netpars subsTrialAvg

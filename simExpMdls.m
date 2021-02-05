@@ -7,7 +7,7 @@ setWorkPath;
 addpath(fullfile(Path_RootDir, 'simExp'));
 
 %%
-flagTask = 4;
+flagTask = 3;
 % 1. Demo of the Gibbs sampling of a hierarchical model containing s and z.
 %    This hierarchical model is used in my Cosyne 2019 study.
 % 2. For the same hierarchical model as task 1, calculate the cross entropy
