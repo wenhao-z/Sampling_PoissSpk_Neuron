@@ -49,7 +49,7 @@ There are two main files the user can use to reproduce the results in this study
 
  The `Cluster_code\simNet_ScanPars.m` should be ran on a high performance cluster (HPC). 
 
- A single loop in `simNet_ScanPars.m` will take about 40 mins in a single thread.
+ A single loop in `simNet_ScanPars.m` will take about 4GB of RAM and ran about 40 mins in a single thread.
  
  The user may need to revise `simNet_ScanPars.m` based on the job scheduler or mangement on the HPC.
 
