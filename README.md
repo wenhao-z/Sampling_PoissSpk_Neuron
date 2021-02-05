@@ -39,7 +39,7 @@ There are three main codes the user can use to reproduce the results in this stu
 - `Cluster_code\simNet_ScanPars.m`
 - `Cluster_code\ansNetDat_ScanPars.m`
 
-## Guideline of running `simExpMdls.m`
+### Guideline of running `simExpMdls.m`
 
 Directly run `simExpMdls.m` and you can get most of demo results in the presented study.
 
@@ -47,14 +47,14 @@ You can change the variable `flagTask` in `simExpMdls.m` to get the results unde
 
 The `simExpMdls.m` can be ran on a standand computer with enough RAM. The computer should have at least 8GB of RAM.
 
-## Guideline of running `Cluster_code\simNet_ScanPars.m`
+### Guideline of running `Cluster_code\simNet_ScanPars.m`
 The `simNet_ScanPars.m` should be ran on a high performance cluster (HPC). 
 
 A single loop in `simNet_ScanPars.m` will take about 4GB of RAM and ran about 40 mins in a single thread.
  
 The user may need to revise `simNet_ScanPars.m` based on the job scheduler or mangement on the HPC.
 
-## Guideline of running `Cluster_code\ansNetDat_ScanPars.m`
+### Guideline of running `Cluster_code\ansNetDat_ScanPars.m`
 `ansNetDat_ScanPars.m` should be only ran after running `Cluster_code\simNet_ScanPars.m` to obtain a results.
 You need to set `fileName` in `ansNetDat_ScanPars.m` to read the results ran by `simNet_ScanPars.m`.
 
