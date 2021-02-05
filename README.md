@@ -6,7 +6,7 @@
 - [Overview](#overview)
 - [License](#License)
 - [System Requirements](#system-requirements)
-- [Installation Guide](#installation-guide)
+- [User Guide](#User-guide)
 - [Setting up the development environment](#setting-up-the-development-environment)
 
 # Overview
@@ -31,11 +31,21 @@ The network model have three sources of variability:
 More details of the network model and the results of this code can be found at our bioRxiv paper at:
 https://www.biorxiv.org/content/10.1101/2020.11.18.389197v2
 
-# System Requirements
-The code was developed on MATLAB R2018b and can be ran on MATLAB with new version.
+# User guide and system Requirements
+The code was developed on MATLAB R2018b and can be ran on MATLAB whose version is at least R2018b, no matter what operating system.
+Directly download the whole package of code. 
+
+There are two main files the user can use to reproduce the results in this study
+
+- `simExpMdls.m`
+
+Directly run `simExpMdls.m` and you can get most of demo results in the presented study.
+
+You can change the variable `flagTask` in `simExpMdls.m` to get the results under different demo task.
 
 The `simExpMdls.m` can be ran on a standand computer with enough RAM. The computer should have at least 8GB of RAM.
 
+- `Cluster_code\simNet_ScanPars.m`
 The `Cluster_code\simNet_ScanPars.m` should be ran on a high performance cluster (HPC). 
 A single loop in `simNet_ScanPars.m` will take about 5 mins in a single node.
 The user may need to revise `simNet_ScanPars.m` based on the job scheduler or mangement on the HPC.
