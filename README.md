@@ -56,6 +56,7 @@ The user may need to revise `simNet_ScanPars.m` based on the job scheduler or ma
 
 ### Guideline of running `Cluster_code\ansNetDat_ScanPars.m`
 `ansNetDat_ScanPars.m` should be only ran after running `Cluster_code\simNet_ScanPars.m` to obtain a results.
+
 You need to set `fileName` in `ansNetDat_ScanPars.m` to read the results ran by `simNet_ScanPars.m`.
 
 # License
