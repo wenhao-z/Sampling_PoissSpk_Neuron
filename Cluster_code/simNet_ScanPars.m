@@ -34,7 +34,7 @@ parsMdl.bSample_ufwd = 1;
 % Parameters for the test
 parsMdl.Posi = 0; % Input feature, i.e., position on the feature subspace
 parsMdl.dPosi = 2; % The difference between a pair of inputs to compute Fisher information
-parsMdl.tLen = 20*1e3;% The length of simulation. unit: ms
+parsMdl.tLen = 2e3*1e3;% The length of simulation. unit: ms
 parsMdl.tTrial = 0.2*1e3; % The length of a trial; unit: ms
 parsMdl.nTrials = parsMdl.tLen / parsMdl.tTrial; % Number of trials
 parsMdl.tStat = 0;
@@ -63,6 +63,7 @@ meanPosterior = cell(size(parGrid)); % [(s,z), dim of parGrid];
 tStart = clock;
 
 for IdxPar = 1: numel(parGrid)
+    tic
     % IdxPar = str2double(getenv('SLURM_ARRAY_TASK_ID'));
     fprintf('Progress: %d/%d\n', IdxPar, numel(parGrid));
     
@@ -91,6 +92,7 @@ for IdxPar = 1: numel(parGrid)
         [InfoAnsFwdRes, NetStatFwd] = InfoTheoAns_BatchFunc(nSpkfwd, popVec, netpars, 'minRateAns', ...
             minRateAns, 'bBootStrap', bBootStrap, 'nBootStrap', nBootStrap);
     end
+    toc
 end
 tEnd = clock;
 clear outSet netpars subsTrialAvg
