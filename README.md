@@ -43,7 +43,7 @@ There are three main codes the user can use to reproduce the results in this stu
 
 Directly run `simExpMdls.m` and you can get most of demo results in the presented study.
 
-You can change the variable `flagTask` in `simExpMdls.m` to get the results under different demo task.
+You can change the variable `flagTask` in `simExpMdls.m` to get the results under different demo tasks.
 
 The `simExpMdls.m` can be ran on a standand computer with enough RAM. The computer should have at least 8GB of RAM.
 
