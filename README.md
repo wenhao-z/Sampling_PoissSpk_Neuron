@@ -10,7 +10,7 @@
 # Overview
 This code simulates a recurrent neural network which uses the structured recurrent connections and internal Poisson spiking variability to implement
 Gibbs sampling on the stimulus feature subspace in neural response space to approximate the joint posterior over a stimulus and a context feature. 
-We use this network model to show the network has an optimal non-zero recurrent strength to correctly samplg the joint posterior, and the optimal recurrent stregnth is determined by the correlation strength between stimulus and context in the world.
+We use this network model to show the network has an optimal non-zero recurrent strength to correctly sample the joint posterior, and the optimal recurrent stregnth is determined by the correlation strength between stimulus and context in the world.
 
 The network has excitatory (E) and inhibitory (I) neurons, with each neuron modeled as a Hawkes process. 
 The E neurons have Gaussian tunings over the stimulus feature, while the I neurons don't have selectivity over stimulus and only keep the stability of the network.
