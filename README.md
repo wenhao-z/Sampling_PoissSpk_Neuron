@@ -5,6 +5,12 @@
 
 - [Overview](#overview)
 - [Documentation](#documentation)
+- [License](#License)
 - [System Requirements](#system-requirements)
 - [Installation Guide](#installation-guide)
 - [Setting up the development environment](#setting-up-the-development-environment)
+
+
+# License
+
+This project is covered under the **Apache 2.0 License**.
