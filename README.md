@@ -36,6 +36,7 @@ Directly download the whole package of code.
 There are two main files the user can use to reproduce the results in this study
 
 - `simExpMdls.m`
+- `Cluster_code\simNet_ScanPars.m`
 
  Directly run `simExpMdls.m` and you can get most of demo results in the presented study.
 
@@ -43,7 +44,6 @@ There are two main files the user can use to reproduce the results in this study
 
  The `simExpMdls.m` can be ran on a standand computer with enough RAM. The computer should have at least 8GB of RAM.
 
-- `Cluster_code\simNet_ScanPars.m`
 
  The `Cluster_code\simNet_ScanPars.m` should be ran on a high performance cluster (HPC). 
 
