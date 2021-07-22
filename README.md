@@ -7,7 +7,7 @@
 - [License](#License)
 
 # Overview
-This code simulates a recurrent neural network and coupled networks which use the structured recurrent connections and internal Poisson spiking variability to implement Gibbs sampling on the stimulus subspace in neural response space to approximate the joint posterior over latent stimuli.
+This code simulates a recurrent neural network and coupled networks which use the structured recurrent connections and the Poisson variability of internal spike generation to implement sampling-based Bayesian inference on the stimulus subspace in neural response space to approximate the multivariate posterior over latent stimuli.
 <!-- We use this network model to show the network has an optimal non-zero recurrent strength to correctly sample the joint posterior, and the optimal recurrent stregnth is determined by the correlation strength between stimulus and context in the world. -->
 
 The network has excitatory (E) and inhibitory (I) neurons, with each neuron modeled as a Hawkes process. 
@@ -31,11 +31,12 @@ https://www.biorxiv.org/content/10.1101/2020.11.18.389197v2
 The code was developed on MATLAB R2018b and can be ran on MATLAB whose version is at least R2018b, no matter what operating system.
 Directly download the whole package of code. 
 
-There are three main codes the user can use to reproduce the results in this study
+There are four main codes the user can use to reproduce the results in this study
 
 - `simExpMdls.m`
 - `Cluster_code\simNet_ScanPars.m`
 - `Cluster_code\ansNetDat_ScanPars.m`
+- `Cluster_code\scanCoupledNet_RandPars_Cluster.m`
 
 ### Guideline of running `simExpMdls.m`
 
