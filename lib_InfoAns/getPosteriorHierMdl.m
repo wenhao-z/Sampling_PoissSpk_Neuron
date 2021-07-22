@@ -23,5 +23,6 @@ if parsMdl.UrecWorld == 0
 else
     Sigma(2,2) = Sigma(2,2) + 1./parsMdl.UrecWorld;
 end
-Sigma = Sigma * parsMdl.TunWidth/ (sqrt(2*pi) * parsMdl.rho);
+Sigma = Sigma * parsMdl.TunWidth/ (sqrt(2*pi) * parsMdl.rho); % This line has a bug which is inconsistent with the width of feedforward input in makeRateFwd.m
+% Sigma = Sigma * sqrt(2)*parsMdl.TunWidth/ (sqrt(2*pi) * parsMdl.rho);
 Sigma = Sigma ./ parsMdl.tTrial*1e3; % scaled to the duration of each trial

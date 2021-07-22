@@ -1,30 +1,54 @@
-function outSet = simHawkesNet(ratefwd, parsMdl)
+function outSet = simCoupledHawkesNet(ratefwd, parsMdl)
 % Simulate a linear Hawkes process with ring structure.
 % ratefwd is the firing rate in a time bin of the feedfoward input
 
 % Wen-Hao Zhang,
-% University of Pittsburgh
-% July 2, 2019
+% University of Chicago
+% May 10, 2021
 
 % Release heavily used parameters from parsMdl
 Ne      = parsMdl.Ne;
 Ni      = parsMdl.Ni;
-Ncells  = Ne + Ni;
+Ncells  = Ne + Ni; % Number of neurons in a network
+numNets = parsMdl.numNets;
 dt      = parsMdl.dt; % Change the unit of dt into sec.
-FanoFactorIntVar = parsMdl.FanoFactorIntVar;
+
+% FanoFactorIntVar = parsMdl.FanoFactorIntVar;
 
 tauDecay    = parsMdl.tauIsynDecay; % decay time constant of synaptic input
 alphaDecay  = exp(-dt/tauDecay);
 
 % -----------------------------------------------
 % Generate the connection profile
+
+% The connection strength within the same network
 Jmat = parsMdl.jxe * repmat([1, -parsMdl.ratiojie], 2, 1);
 Jmat = Jmat ./ sqrt(Ne + Ni); % scale with the square root of network size
+
+% The connection strength across networks.
+if parsMdl.bShareInhPool
+    Jrpmat = Jmat;
+    Jrpmat(1,1) = parsMdl.ratiojrprc * Jrpmat(1,1);
+    
+    %     Jrpmat = parsMdl.ratiojrprc * Jmat;
+else
+    % Note that there is no inhibitory connections across networks hence the
+    % 2nd column of Jrpmat is all ZERO.
+    Jrpmat = parsMdl.ratiojrprc * Jmat;
+    Jrpmat(:,2) = 0;
+    % Jrpmat(2,1) = 0.1*parsMdl.ji0 * parsMdl.ratiojrprc * Jmat(1,1);
+    Jrpmat(2,1) = 1* parsMdl.ratiojrprc * Jmat(1,1);
+end
+
+if parsMdl.bCutRecConns
+    % Cut off recurrent connections within the same network!!!
+    Jmat(1,1) = 0;
+end
 
 % E-E connection matrix
 Wee = gaussTuneKerl(parsMdl.PrefStim(1), parsMdl.TunWidth, parsMdl, 1);
 Wee = gallery('circul', Wee);
-Wee = Jmat(1,1) * Wee * 2 * parsMdl.width;
+Wee = Wee * 2 * parsMdl.width;
 
 if isfield(parsMdl, 'bRandWee') && parsMdl.bRandWee
     IdxRand = randperm(numel(Wee), numel(Wee));
@@ -33,20 +57,28 @@ if isfield(parsMdl, 'bRandWee') && parsMdl.bRandWee
 end
 
 % No stochasticity in the connection
-weights = [Wee, Jmat(1,2) * ones(Ne, Ni); ...
+weights11 = [Jmat(1,1) * Wee, Jmat(1,2) * ones(Ne, Ni); ...
     Jmat(2,1)* ones(Ni, Ne), Jmat(2,2)*ones(Ni,Ni)];
+
+weights12 = [Jrpmat(1,1) * Wee, Jrpmat(1,2) * ones(Ne, Ni); ...
+    Jrpmat(2,1)* ones(Ni, Ne), Jrpmat(2,2)*ones(Ni,Ni)];
+
+weights = [weights11, weights12; ...
+    weights12, weights11];
+clear weights11 weights12
 
 % -----------------------------------------------
 % Initialization
 Nsteps = round(parsMdl.tLen/parsMdl.dt);
 
-bSpk      = false(Ncells, 1);
-tSpk      = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
-tSpkfwd   = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
-popVec    = zeros(4, Nsteps); % [4, T], rows are s, z, mu_s, x respectively.
+bSpk      = false(numNets*Ncells, 1);
+tSpk      = zeros(2, numNets*Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
+tSpkfwd   = zeros(2, numNets*Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
+% rateArray = zeros(Ncells, Nsteps);
+popVec    = zeros(4, Nsteps); % [2, T], rows are s1 and s2;
 
-xfwd      = zeros(Ncells,1); % The filtered feedforward input. 
-xrec      = zeros(Ncells,1); % The filtered recurrent input
+xfwd      = zeros(numNets*Ncells,1); % The filtered feedforward input. 
+xrec      = zeros(numNets*Ncells,1); % The filtered recurrent input
 
 nSpkCount = 0;
 if parsMdl.bSample_ufwd
@@ -61,7 +93,7 @@ rng(parsMdl.rngNetSpk);
 for iter = 1: Nsteps
     % Feedforward input
     if parsMdl.bSample_ufwd
-        ufwd = (ratefwd > rand(Ncells,1)); % A binary spike has the unit of firing probability in the time bin.
+        ufwd = (ratefwd > rand(numNets*Ncells,1)); % A binary spike has the unit of firing probability in the time bin.
         
         % Record the feedforward spikes
         nSpkNow = sum(ufwd);
@@ -77,7 +109,6 @@ for iter = 1: Nsteps
             ufwd = xfwd/ tauDecay; % unit: 1/ms = kHz
             ufwd = ufwd * dt;
         end
-        
     else
         ufwd = ratefwd;
     end
@@ -85,7 +116,9 @@ for iter = 1: Nsteps
     % ------------------------------------------------------------    
     % Recurrent input
     urec = sum(weights(:, bSpk), 2);
-        
+    % Add the internal variability on recurrent input
+    % urec = urec + sqrt(FanoFactorIntVar * urec.*(urec>0)) .* randn(Ncells,1);
+
     % Filter the spiking recurrent input
     if tauDecay > 0
         xrec = alphaDecay * xrec + urec;
@@ -93,18 +126,18 @@ for iter = 1: Nsteps
         urec = urec * dt;
     end
     
-    % Add the internal variability on recurrent input
-    % urec = urec + sqrt(FanoFactorIntVar * abs(urec)) .* randn(Ncells,1);
-    urec = urec + sqrt(FanoFactorIntVar * urec.*(urec>0)) .* randn(Ncells,1);
-    
     % ------------------------------------------------------------
+    
     % Updating the instantaneous firing rate
     rate = ufwd + urec + ubkg; % firing probability in the time bin
-    bSpk = (rate > rand(Ncells,1)); % Spike generation
+    bSpk = (rate > rand(numNets*Ncells,1)); % Spike generation
+    % rateArray(:, iter) = rate.*(rate>0);
     
     % Decode the position on the ring
     % Note .' because popVec is imaginary number. And ' will output the conjugate
-    popVec(:, iter) = popVectorRep([bSpk(1:Ne), urec(1:Ne), rate(1:Ne), ufwd(1:Ne)], parsMdl).';
+    %     popVec(:, iter) = popVectorRep([bSpk(1:Ne), bSpk(Ncells+1: Ncells+Ne)], parsMdl).';
+    popVec(:, iter) = popVectorRep([bSpk(1:Ne), bSpk(Ncells+1: Ncells+Ne), ...
+        rate(1:Ne), rate(Ncells+1: Ncells+Ne)], parsMdl).';
     
     % Record the spike timing
     nSpkNow = sum(bSpk);

@@ -7,8 +7,9 @@ parsMdl.width = 180; % (-width, width], unit: deg
 parsMdl.TunWidth = 40; % unit: deg;
 parsMdl.Ne = 180; % Number of E neurons
 parsMdl.Ni = parsMdl.Ne/4; % Number of I neurons
-parsMdl.Ncells = parsMdl.Ne + parsMdl.Ni;
+parsMdl.Ncells = parsMdl.Ne + parsMdl.Ni; % Number of neurons in a network
 parsMdl.rho = parsMdl.Ne/(2*parsMdl.width);
+parsMdl.numNets = 1; % only a single network
 
 % Preferred stimuli of neurons.
 % The location of neurons in the feature space

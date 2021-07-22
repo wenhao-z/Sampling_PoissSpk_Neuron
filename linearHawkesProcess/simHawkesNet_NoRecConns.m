@@ -1,10 +1,11 @@
-function outSet = simHawkesNet(ratefwd, parsMdl)
-% Simulate a linear Hawkes process with ring structure.
-% ratefwd is the firing rate in a time bin of the feedfoward input
+function outSet = simHawkesNet_NoRecConns(ratefwd, parsMdl)
+% Simulate a linear Hawkes process without recurrent connections to
+% demonstrate the internal Poisson spiking variability is able to sample a
+% probability distribution
 
 % Wen-Hao Zhang,
-% University of Pittsburgh
-% July 2, 2019
+% University of Chicago
+% May 17, 2021
 
 % Release heavily used parameters from parsMdl
 Ne      = parsMdl.Ne;
@@ -20,6 +21,9 @@ alphaDecay  = exp(-dt/tauDecay);
 % Generate the connection profile
 Jmat = parsMdl.jxe * repmat([1, -parsMdl.ratiojie], 2, 1);
 Jmat = Jmat ./ sqrt(Ne + Ni); % scale with the square root of network size
+
+% Remove the E-E connections
+Jmat(1,1) = 0;
 
 % E-E connection matrix
 Wee = gaussTuneKerl(parsMdl.PrefStim(1), parsMdl.TunWidth, parsMdl, 1);
@@ -43,7 +47,8 @@ Nsteps = round(parsMdl.tLen/parsMdl.dt);
 bSpk      = false(Ncells, 1);
 tSpk      = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
 tSpkfwd   = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
-popVec    = zeros(4, Nsteps); % [4, T], rows are s, z, mu_s, x respectively.
+% rateArray = zeros(Ncells, Nsteps);
+popVec    = zeros(2, Nsteps); % [4, T], rows are s, z, mu_s, x respectively.
 
 xfwd      = zeros(Ncells,1); % The filtered feedforward input. 
 xrec      = zeros(Ncells,1); % The filtered recurrent input
@@ -77,7 +82,6 @@ for iter = 1: Nsteps
             ufwd = xfwd/ tauDecay; % unit: 1/ms = kHz
             ufwd = ufwd * dt;
         end
-        
     else
         ufwd = ratefwd;
     end
@@ -85,7 +89,7 @@ for iter = 1: Nsteps
     % ------------------------------------------------------------    
     % Recurrent input
     urec = sum(weights(:, bSpk), 2);
-        
+
     % Filter the spiking recurrent input
     if tauDecay > 0
         xrec = alphaDecay * xrec + urec;
@@ -93,18 +97,16 @@ for iter = 1: Nsteps
         urec = urec * dt;
     end
     
-    % Add the internal variability on recurrent input
-    % urec = urec + sqrt(FanoFactorIntVar * abs(urec)) .* randn(Ncells,1);
-    urec = urec + sqrt(FanoFactorIntVar * urec.*(urec>0)) .* randn(Ncells,1);
-    
     % ------------------------------------------------------------
+    
     % Updating the instantaneous firing rate
     rate = ufwd + urec + ubkg; % firing probability in the time bin
     bSpk = (rate > rand(Ncells,1)); % Spike generation
+    % rateArray(:, iter) = rate.*(rate>0);
     
     % Decode the position on the ring
     % Note .' because popVec is imaginary number. And ' will output the conjugate
-    popVec(:, iter) = popVectorRep([bSpk(1:Ne), urec(1:Ne), rate(1:Ne), ufwd(1:Ne)], parsMdl).';
+    popVec(:, iter) = popVectorRep([bSpk(1:Ne), rate(1:Ne)], parsMdl).';
     
     % Record the spike timing
     nSpkNow = sum(bSpk);

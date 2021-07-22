@@ -17,6 +17,11 @@ flagTask = 3;
 %    Cross entropy, mutual information and classical Fisher information
 %    Network model can be bipartite net, or linear Hawkes process, or a
 %    spiking CANN
+% 5. Demo of Poisson spiking variability (a network without recurrent connections)
+%    can sample a distribution
+% 6. Demo of the responses of two coupled neural networks
+% 7. Scan parameters of two coupled neural networks
+
 
 switch flagTask
     case 1
@@ -24,7 +29,13 @@ switch flagTask
     case 2
         HiracMdl_XEntMdlParams;
     case 3
-        demoLinearHawkesProcess;
+        demoRecHawkesNet;
     case 4
         InfoAns_NetMdls;
+    case 5
+        demoPoissonSampling;
+    case 6
+        demoCoupledHawkesNet;
+    case 7   
+        scanCoupledHawkesNet;
 end

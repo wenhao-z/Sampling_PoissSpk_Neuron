@@ -6,7 +6,7 @@ function Kerl = gaussTuneKerl(posi, TunWidth, parsMdl, bNormalize)
 diff = exp(1i * (parsMdl.PrefStim - posi)/parsMdl.width*pi);
 diff = angle(diff)*parsMdl.width/pi;
 
-Kerl = exp(-diff.^2/ (2*TunWidth^2));
+Kerl = exp(-diff.^2 ./ (2*TunWidth.^2));
 
 if bNormalize
     % Normalize into a pdf
