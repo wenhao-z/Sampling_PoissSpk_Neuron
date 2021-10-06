@@ -3,6 +3,5 @@ function rateUfwd = makeRateFwd(Posi, parsMdl)
 % Wen-Hao Zhang, July 2, 2019
 % University of Pittsburgh
 
-% rateUfwd = parsMdl.Ufwd * gaussTuneKerl(Posi, parsMdl.TunWidth, parsMdl, 0);
 rateUfwd = parsMdl.Ufwd(:)' .* gaussTuneKerl(Posi(:)', sqrt(2)*parsMdl.TunWidth, parsMdl, 0);
 rateUfwd = rateUfwd * parsMdl.dt/1e3;

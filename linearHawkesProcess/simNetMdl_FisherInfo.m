@@ -1,13 +1,13 @@
-function outSet = simNetMdl_FisherInfo(parsMdl)
+function outSet = simNetMdl_FisherInfo1(parsMdl)
 % Simulate a network model for Fisher information analysis
 % Given the network parameter, I will apply to stimuli at different
 % positions to the network to calculate Fisher information.
 % Wen-Hao Zhang, Aug. 2, 2019
 
-tSpkArray = cell(2,1); % Spike timing of network activity
-tSpkfwdArray = cell(2,1); % Spike timing of feedforward input
-popVecArray = cell(2,1); % The position of input and responses on feature space
-meanPosterior = cell(2,1); 
+tSpkArray = cell(2,1);
+tSpkfwdArray = cell(2,1);
+popVecArray = cell(2,1);
+meanPosterior = cell(2,1);
 
 % A for-loop for two stimulus positions whose results will be used to
 % estimate Fisher information.

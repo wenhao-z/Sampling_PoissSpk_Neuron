@@ -1,12 +1,5 @@
-% Demo of the network model with each neurons modeled as a linear Hawkes
-% process. The E neurons are arranged on a ring according to their
-% preferred periodic stimulus feature, while the I neurons in the network
-% are not selective to the stimulus feature.
-
-% There are three variability in this model:
-% 1. Poissonian feedforward input.
-% 2. Poisson spike generation in the model.
-% 3. Poisson-like recurrent variability.
+% Demo of a linear Hawkes process where the E neurons are organized on a
+% ring
 
 % Wen-Hao Zhang, July 2, 2019
 % University of Pittsburgh
@@ -14,16 +7,15 @@
 %% Parameters of the model
 parsHawkesNet;
 
-parsMdl.tauIsynDecay = 2; % Decaying time constant for synaptic input. unit: ms
-parsMdl.dt = 0.1; % Simulation time step. unit: ms.
-parsMdl.tLen = 200*1e3; % unit: ms 
-parsMdl.bSample_ufwd = 1; % 1: Generating Poisson input at every time step.
-%                           0: Freezed feedforward input.
-parsMdl.jxe = 2e-2; % E synaptic strength.
-parsMdl.ratiojie = 5; % Ratio between I and E synaptic strength.
-parsMdl.FanoFactorIntVar = 1; % The Fano factor of recurrent interactions.
+% parsMdl.Ne = 180 * 40;
+% parsMdl.tLen = 2e3*1e3; % unit: ms 
+parsMdl.tLen = 100*1e3; % unit: ms 
+parsMdl.bSample_ufwd = 1;
+parsMdl.jxe = 4e-3; %2e-2;
+parsMdl.ratiojie = 5;
+parsMdl.FanoFactorIntVar = 1;
 
-parsMdl.tTrial = 0.2*1e3; % length of a trial. Unit: sec
+parsMdl.tTrial = 0.2*1e3; % length of a trial. Unit: ms
 
 % Compute the dependent parameters
 parsMdl = getDependentPars_HawkesNet(parsMdl);
@@ -31,16 +23,15 @@ parsMdl = getDependentPars_HawkesNet(parsMdl);
 %% Simulation
 
 % Generate a sample of feedforward spiking input
-ratefwd = makeRateFwd(parsMdl.Posi, parsMdl); % The rate of feedforward input to E neurons
-ratefwd = [ratefwd; parsMdl.ji0 * sum(ratefwd)/parsMdl.Ni*ones(parsMdl.Ni,1)]; % Concatenate the input to I neurons
+ratefwd = makeRateFwd(parsMdl.Posi, parsMdl);
+ratefwd = [ratefwd; parsMdl.ji0 * sum(ratefwd)/parsMdl.Ni*ones(parsMdl.Ni,1)];
+% ratefwd = [ratefwd; zeros(parsMdl.Ni,1)];
 
-% Simulate the network model
 tic
 outSet = simHawkesNetDemo(ratefwd, parsMdl);
 toc
 %%
 % Spike count in of each trial
-% Partition a long trial neural response into disjoint trials (segments)
 tEdge = [0: parsMdl.tTrial : parsMdl.tLen, parsMdl.tLen + parsMdl.tTrial];
 neuronEdge = 0.5: parsMdl.Ne + 0.5;
 nSpk = histcounts2(outSet.tSpk(1,:)', outSet.tSpk(2,:)', neuronEdge, tEdge);
@@ -58,8 +49,7 @@ NetStat = getNetMdlStat(nSpk, popVec, parsMdl);
 CovRate = cov(nSpk')/parsMdl.tTrial*1e3;
 CorrRate = corr(nSpk');% Mean of decoded results in each trial
 
-% Calculate the noise correlation with difference between two neurons'
-% prefered stimulus
+% Calculate the correlation with distance on the ring
 [rowSub, colSub] = ind2sub(size(CovRate), 1:numel(CovRate));
 diffInd = abs(rowSub - colSub);
 diffInd(diffInd>length(CovRate)/2) = diffInd(diffInd>length(CovRate)/2) - length(CovRate);
@@ -96,21 +86,43 @@ plotSpkRaster(tSpk, parsMdl, 'tBin', 0.01*1e3);
 set(gca, 'xlim', [0, tLim])
 
 %%
+% figure(2); clf;
 figure
-subplot(3,2,1)
+subplot(2,3,1)
 plot(parsMdl.PrefStim, NetStat.ratePop)
 hold on;
 plot(parsMdl.PrefStim, NetStat.ratePop + sqrt(diag(CovRate)));
 plot(parsMdl.PrefStim, NetStat.ratePop - sqrt(diag(CovRate)));
 set(gca, 'xlim', parsMdl.PrefStim(end)*[-1,1], 'xtick', -180:90:180)
 ylabel('Firing rate (Hz)')
+axis square
 
-subplot(3,2,2)
+title(['T=' num2str(parsMdl.tLen/1e3), 's'])
+
+subplot(2,3,2)
+plot(1:parsMdl.Ni, mean(nSpkI,2)/parsMdl.tTrial*1e3)
+hold on;
+plot(1:parsMdl.Ni, (mean(nSpkI,2) + std(nSpkI, 0,2))/parsMdl.tTrial*1e3);
+plot(1:parsMdl.Ni, (mean(nSpkI,2) - std(nSpkI, 0,2))/parsMdl.tTrial*1e3);
+set(gca, 'xlim', [1, parsMdl.Ni], 'xtick', [1, parsMdl.Ni], ...
+    'ylim', [0, 50])
+ylabel('Firing rate (Hz)')
+axis square
+
+subplot(2,3,3)
+plot(parsMdl.PrefStim, (diag(CovRate)./NetStat.ratePop))
+set(gca, 'xlim', parsMdl.PrefStim(end)*[-1,1], 'xtick', -180:90:180)
+ylabel('Fano factor')
+ylim([1, 1.5])
+axis square
+
+subplot(2,3,4)
 plot(parsMdl.PrefStim, diag(CovRate));
 ylabel('Cov. of rate')
 set(gca, 'xlim', parsMdl.PrefStim(end)*[-1,1], 'xtick', -180:90:180)
+axis square
 
-subplot(3,2,3)
+subplot(2,3,5)
 imagesc(parsMdl.PrefStim, parsMdl.PrefStim, CovRate - diag(diag(CovRate)));
 % imagesc(CorrRate - diag(diag(CorrRate)));
 set(gca, 'xlim', parsMdl.PrefStim(end)*[-1,1], 'ylim', parsMdl.PrefStim(end)*[-1,1], ...
@@ -119,7 +131,7 @@ axis xy
 title('Cov. of rate')
 axis square
 
-subplot(3,2,4)
+subplot(2,3,6)
 yyaxis left
 plot(diffPrefStim(2:end), CovRate_diffPrefStim(2:end));
 ylabel('Cov. of rate')
@@ -127,15 +139,7 @@ yyaxis right
 plot(diffPrefStim(2:end), CorrRate_diffPrefStim(2:end));
 ylabel('Corr. of rate')
 set(gca, 'xlim', diffPrefStim([1, end]), 'xtick', 0:90:180)
-
-subplot(3,2,5)
-plot(1:parsMdl.Ni, mean(nSpkI,2))
-hold on;
-plot(1:parsMdl.Ni, mean(nSpkI,2) + std(nSpkI, 0,2));
-plot(1:parsMdl.Ni, mean(nSpkI,2) - std(nSpkI, 0,2));
-set(gca, 'xlim', [1, parsMdl.Ni], 'xtick', [1, parsMdl.Ni], ...
-    'ylim', [0, 15])
-ylabel('Firing rate (Hz)')
+axis square
 
 
 %%
@@ -150,6 +154,8 @@ set(hAxe(3), 'xlim', [0, 0.15])
 
 
 % Plot the contour of posterior 
+% X = meanPosterior(1) + 3*covPosterior(1,1)*[-1, 1];
+% Y = meanPosterior(2) + 3*covPosterior(2,2)*[-1, 1];
 X = 40*[-1, 1];
 Y = 40*[-1, 1];
 X = linspace(X(1), X(2), 101);
@@ -158,9 +164,11 @@ Y = linspace(Y(1), Y(2), 101);
 
 Z = mvnpdf([X(:), Y(:)], mean(DecodeRes(1:2,:),2)', cov(DecodeRes(1:2,:)'));
 contourf(X(1,:), Y(:,1), reshape(Z,size(X)), 'linestyle', 'none')
+% imagesc(X(1,:), Y(:,1), reshape(Z,size(X)))
 
 % Define the colormap of the same color series
 cMap = getColorMapPosNegDat([0, max(Z)], 64);
+% cMap = flipud(hot(64));
 colormap(cMap);
 axis xy
 

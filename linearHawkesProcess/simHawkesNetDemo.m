@@ -45,7 +45,11 @@ Nsteps = round(parsMdl.tLen/parsMdl.dt);
 bSpk      = false(Ncells, 1);
 tSpk      = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
 tSpkfwd   = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
+% rateArray = zeros(Ncells, Nsteps);
 popVec    = zeros(4, Nsteps); % [4, T], rows are s, z, mu_s, x respectively.
+
+tref = parsMdl.tref/dt; % unit: time step
+tSpk_LastTime = -tref* ones(Ncells, 1);
 
 xfwd      = zeros(Ncells,1); % The filtered feedforward input. 
 xrec      = zeros(Ncells,1); % The filtered recurrent input
@@ -89,8 +93,6 @@ for iter = 1: Nsteps
     % ------------------------------------------------------------    
     % Recurrent input
     urec = sum(weights(:, bSpk), 2);
-    % Add the internal variability on recurrent input
-    urec = urec + sqrt(FanoFactorIntVar * urec.*(urec>0)) .* randn(Ncells,1);
 
     % Filter the spiking recurrent input
     if tauDecay > 0
@@ -98,6 +100,11 @@ for iter = 1: Nsteps
         urec = xrec/ tauDecay; % unit: 1/ms = kHz
         urec = urec * dt;
     end
+    
+    % Add the internal variability on recurrent input
+    % urec = urec + sqrt(FanoFactorIntVar * abs(urec)) .* randn(Ncells,1);
+    urec = urec + sqrt(FanoFactorIntVar * urec.*(urec>0)) .* randn(Ncells,1);
+    
     urecArray(:, iter) = urec(1:Ne);
     % ------------------------------------------------------------
     
@@ -105,6 +112,10 @@ for iter = 1: Nsteps
     rate = ufwd + urec + ubkg; % firing probability in the time bin
     bSpk = (rate > rand(Ncells,1)); % Spike generation
     % rateArray(:, iter) = rate.*(rate>0);
+    
+    % Refractory period
+    bSpk((iter - tSpk_LastTime)< tref) = 0;
+    tSpk_LastTime(bSpk) = iter;
     
     % Decode the position on the ring
     % Note .' because popVec is imaginary number. And ' will output the conjugate
@@ -115,6 +126,7 @@ for iter = 1: Nsteps
     tSpk(1, nSpkCount+ (1:nSpkNow)) = find(bSpk); % Index of spiking neurons
     tSpk(2, nSpkCount+ (1:nSpkNow)) = iter * dt; % Spike timing
     nSpkCount = nSpkCount + nSpkNow;
+    
 end
 
 % Remove unused spike timing
@@ -128,3 +140,4 @@ outSet.urecArray = urecArray;
 if parsMdl.bSample_ufwd
     outSet.tSpkfwd = tSpkfwd;
 end
+

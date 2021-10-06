@@ -8,17 +8,18 @@
 parsCoupledHawkesNet;
 
 parsMdl.dt = 0.1;
-parsMdl.bSample_ufwd =0;
+parsMdl.bSample_ufwd = 1;
 parsMdl.jxe = 1e-2;
 parsMdl.bCutRecConns = 1; % Cut off all recurrent connections to simplify theoretical analysis
 parsMdl.bShareInhPool = 0; % Whether two networks share the same inhibition pool
-parsMdl.ratiojie = 5;
+parsMdl.ratiojie = 3;
 
 % Input parameters
 parsMdl.Posi = 10*[-1; 1];
 parsMdl.tLen = 102*1e3; % unit: ms
 parsMdl.tStat = 2*1e3;
 parsMdl.tBin = 20; % Decoding time window. unit: ms
+parsMdl.tTrial = parsMdl.tBin;
 
 flagTest = 2;
 % 1: Change the input strength to network 1, and fix other parameters.
@@ -31,7 +32,8 @@ switch flagTest
         parsMdl.ratiojrprc = 1;
     case 2
         parsMdl.Ufwd = 30*ones(2,1);
-        parsMdl.ratiojrprc = 0:0.5:8;
+%         parsMdl.ratiojrprc = 0:0.5:8;
+        parsMdl.ratiojrprc = 0:0.5:5;
 end
 
 % Generate grid of parameters
@@ -109,7 +111,10 @@ if flagTest == 2
     MeanPost = PreMat_Post \ NetStat(IdxPost).PreMat_LH  * parsMdl.Posi;
     
     [XEnt, MutualInfo, MutualInfo_UpBound] = arrayfun(@(S) getMutualInfo(MeanPost, inv(PreMat_Post), ...
-        S.meanSample, S.covSample, 2*parsMdl.width, inv(PreMat_Post)), NetStat);
+        S.meanSample, S.covSample, 2*parsMdl.width, 1./prePrior(IdxPost)), NetStat);
+    
+%     [XEnt, MutualInfo, MutualInfo_UpBound] = arrayfun(@(S) getMutualInfo(MeanPost, inv(PreMat_Post), ...
+%         S.meanSample, S.covSample, 2*parsMdl.width, inv(PreMat_Post)), NetStat);
 end
 
 %% Sampling statistics
@@ -203,11 +208,11 @@ switch flagTest
         
         hAxe(6) = subplot(2,3,6);
         hold on
-        plot(parsMdl.ratiojrprc*parsMdl.jxe, MutualInfo, '-o');
-        plot(parsMdl.ratiojrprc*parsMdl.jxe, MutualInfo_UpBound, '-k');
+        plot(parsMdl.ratiojrprc*parsMdl.jxe, MutualInfo/parsMdl.tBin*1e3, '-o');
+        plot(parsMdl.ratiojrprc*parsMdl.jxe, MutualInfo_UpBound/parsMdl.tBin*1e3, '-k');
         axis square
         ylabel('Mutual info')
-        ylim([5, 7])
+        % ylim([5, 7])
         
         set(hAxe, 'xlim', [min(parsMdl.ratiojrprc), max(parsMdl.ratiojrprc)]*parsMdl.jxe, ...
             'xtick', [0, 1/2, 1]*parsMdl.ratiojrprc(end)*parsMdl.jxe)

@@ -28,10 +28,11 @@ parsMdl.ji0 = 0.8; % ji0 = (total feedfwd inputs to *E* neurons)/ (total feedfwd
 
 % -------------------------------------------------------------------------
 % Temporal parameters
-parsMdl.dt = 0.5; % unit: ms
+parsMdl.dt = 0.1; % unit: ms
 parsMdl.nTrials = 1;
 parsMdl.tLen = 50*1e3; % unit: ms
 parsMdl.tauIsynDecay = 2; % unit: ms, decay time constant of synaptic input
+parsMdl.tref = 2; % Refractory period, unit: ms.
 
 % -------------------------------------------------------------------------
 % Input parameters

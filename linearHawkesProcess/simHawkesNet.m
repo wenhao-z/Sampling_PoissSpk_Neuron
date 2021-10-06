@@ -45,6 +45,9 @@ tSpk      = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
 tSpkfwd   = zeros(2, Ncells* parsMdl.maxrate * parsMdl.tLen/1e3);
 popVec    = zeros(4, Nsteps); % [4, T], rows are s, z, mu_s, x respectively.
 
+tref = parsMdl.tref/dt; % unit: time step
+tSpk_LastTime = -tref* ones(Ncells, 1);
+
 xfwd      = zeros(Ncells,1); % The filtered feedforward input. 
 xrec      = zeros(Ncells,1); % The filtered recurrent input
 
@@ -85,12 +88,13 @@ for iter = 1: Nsteps
     % ------------------------------------------------------------    
     % Recurrent input
     urec = sum(weights(:, bSpk), 2);
-        
+    
     % Filter the spiking recurrent input
     if tauDecay > 0
         xrec = alphaDecay * xrec + urec;
         urec = xrec/ tauDecay; % unit: 1/ms = kHz
         urec = urec * dt;
+        % urec = urec * dt + urec .*(urec>0) * sqrt(dt) .* randn(Ncells,1);
     end
     
     % Add the internal variability on recurrent input
@@ -101,6 +105,10 @@ for iter = 1: Nsteps
     % Updating the instantaneous firing rate
     rate = ufwd + urec + ubkg; % firing probability in the time bin
     bSpk = (rate > rand(Ncells,1)); % Spike generation
+    
+    % Refractory period
+    bSpk((iter - tSpk_LastTime)< tref) = 0;
+    tSpk_LastTime(bSpk) = iter;
     
     % Decode the position on the ring
     % Note .' because popVec is imaginary number. And ' will output the conjugate

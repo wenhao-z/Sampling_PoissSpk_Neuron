@@ -24,11 +24,7 @@ if ~exist('minRateAns', 'var')
     % The minimal firing rate to include a cell into analylsis
     minRateAns = 0; % unit: hz
 end
-if ~exist('bBootStrap', 'var')
-    bBootStrap = 0;
-    nBootStrap = 0;
-end
-if ~bBootStrap
+if ~exist('nBootStrap', 'var')
     nBootStrap = 0;
 end
 
@@ -44,7 +40,7 @@ Info_sext_bootstrap = zeros(1, nBootStrap+1);
 % Info_sext_bootstrap(1): the Fisher information without randomly draw data in bootstrap
 
 for iter = 1: (nBootStrap+1)
-    if bBootStrap || (iter > 1)
+    if (nBootStrap>0) && (iter > 1)
         IdxTrial = datasample(1: nTrials, nTrials);
     else
         % The 1st iteration uses _original data_ without bootstrap even if
@@ -75,7 +71,7 @@ end
 Info_sext = Info_sext_bootstrap(1);
 
 % Standard deviation of Fisher information estimated from bootstrap
-if bBootStrap
+if nBootStrap > 0
     stdInfo = std(Info_sext_bootstrap(2:end));
 else
     stdInfo = 0;

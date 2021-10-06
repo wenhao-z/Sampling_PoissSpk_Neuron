@@ -37,8 +37,8 @@ end
 Posi = angle(popVec) * parsMdl.width / pi;
 % For zero activity, randomly draw a position from feature space
 Idx = (popVec == 0);
-Posi(Idx) = nan;
-% Posi(Idx) = (2*rand(1, sum(Idx(:)))-1)*parsMdl.width;
+% Posi(Idx) = nan;
+Posi(Idx) = (2*rand(1, sum(Idx(:)))-1)*parsMdl.width;
 
 if nargout > 2
     meanPosi = mean(popVec, 2, 'omitnan'); % complex number

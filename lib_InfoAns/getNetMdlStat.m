@@ -41,7 +41,7 @@ NetStat.covSample   = covSample;
 %% Statistics of neuronal activity
 
 % Mean population firing rate
-ratePop = squeeze(mean(nSpk,2))/parsMdl.tLen*1e3;
+ratePop = squeeze(mean(nSpk,2))/parsMdl.tTrial*1e3;
 
 if parsMdl.numNets > 1
    ratePop = reshape(ratePop, parsMdl.Ne, parsMdl.numNets); 
@@ -52,7 +52,7 @@ tuneParams = lsFitTuneFunc(ratePop, parsMdl); % [Height, posi, Width, Bias]
 
 if parsMdl.numNets == 1
     % Mean firing rate across neurons and across trials
-    % rateAvg = squeeze(mean(nSpk(:)))/parsMdl.tTrial*1e3;
+    rateAvg = squeeze(mean(nSpk(:)))/parsMdl.tTrial*1e3;
     
     % Correlation coefficient of spike count
     corr_r = corr(nSpk');
@@ -61,7 +61,7 @@ if parsMdl.numNets == 1
     
     % Fold analyzed results into a struct
     NetStat.ratePop     = ratePop;
-    % NetStat.rateAvg     = rateAvg;
+    NetStat.rateAvg     = rateAvg;
     NetStat.corrAvg     = corrAvg;
     NetStat.rateHeight  = tuneParams(1);
     NetStat.ratePosi    = tuneParams(2);
