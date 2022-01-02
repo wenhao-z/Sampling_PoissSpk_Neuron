@@ -32,7 +32,7 @@ The code was developed on MATLAB R2018b and can be ran on MATLAB whose version i
 Directly download the whole package of code. 
 
 There are four main codes the user can use to reproduce the results in this study
-- 'randn()'
+- `randn()`
 - `simExpMdls.m`
 - `Cluster_code\simNet_ScanPars.m`
 - `Cluster_code\ansNetDat_ScanPars.m`
