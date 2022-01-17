@@ -1,4 +1,4 @@
-# RecNet_NeuralCodes
+# Sampling-based inference in a population of Poisson spiking neurons
  
 [![bioRXiv shield](https://img.shields.io/badge/bioRxiv-bioRxiv-green)](https://www.biorxiv.org/content/10.1101/2020.11.18.389197v2)
 
