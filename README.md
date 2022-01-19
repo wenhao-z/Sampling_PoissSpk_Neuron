@@ -18,12 +18,6 @@ Recurrent connections in the network
 - Two E neurons are connected according to their tuning similarity.
 - All other connections in the network, including E to I, I to E and I to I are unstructured.
 
-The network model have three sources of variability:
-
-- Feedforward Poisson inputs.
-- Internal Poisson spiking variability.
-- Recurrent Poisson-like variability.
-
 More details of the network model and the results of this code can be found at our bioRxiv paper at:
 https://www.biorxiv.org/content/10.1101/2020.11.18.389197v2
 
