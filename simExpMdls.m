@@ -10,6 +10,7 @@ addpath(fullfile(Path_RootDir, 'simExp'));
 %%
 flagTask = 5;
 % 1. Demo of the Gibbs sampling of a hierarchical model containing s and z.
+%    (Figure 4 of the paper)
 % 2. For the same hierarchical model as task 3, calculate the cross entropy
 %    and classical Fisher information with model parameters.
 % 3. Demo of Poisson spiking variability (a network without recurrent connections
@@ -18,8 +19,10 @@ flagTask = 5;
 %    (Figure 4 of the paper)
 % 5. Scan parameters of single recurrent network and compare its sampling
 %    distribution with joint posterior of stimulus and context
+%    (Figure 5A and Figure S1-S2 of the paper)
 % 6. The Fisher information of neurons in a recurrent network with
 %    recurrent strength
+%    (Figure 1 of the paper)
 % 7. Demo of the responses of two coupled neural networks
 %    (Figure 6 of the paper)
 % 8. Scan parameters of two coupled neural networks and compare its
