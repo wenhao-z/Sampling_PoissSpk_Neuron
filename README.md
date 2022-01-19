@@ -7,7 +7,7 @@
 - [License](#License)
 
 # Overview
-This code simulates a recurrent neural network and coupled networks which use the structured recurrent connections and the Poisson variability of internal spike generation to implement sampling-based Bayesian inference on the stimulus subspace in neural response space to approximate the multivariate posterior over latent stimuli.
+This code simulates a recurrent neural network and coupled networks of Poisson spiking neurons which implement sampling-based Bayesian inference to approximate the multivariate posterior of latent stimuli. In the network model, the sampling is driven by the internal Poisson variability of spike generation, and the structured recurrent connections store a prior of latent stimuli.
 <!-- We use this network model to show the network has an optimal non-zero recurrent strength to correctly sample the joint posterior, and the optimal recurrent stregnth is determined by the correlation strength between stimulus and context in the world. -->
 
 The network has excitatory (E) and inhibitory (I) neurons, with each neuron modeled as a Hawkes process. 
